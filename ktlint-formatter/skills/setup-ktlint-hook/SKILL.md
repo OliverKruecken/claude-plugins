@@ -3,16 +3,18 @@ name: setup-ktlint-hook
 description: Register the ktlint PostToolUse hook in this project's .claude/settings.json. The hook self-installs the ktlint binary on first use — no manual install required.
 ---
 
-Add a PostToolUse hook to `.claude/settings.json` in the current project that runs
-`~/.claude/plugins/ktlint-formatter/hooks/ktlint-format.sh` after every Edit or Write.
-Also add the Bash permission `Bash(./gradlew :backend:ktlintFormat --quiet)` to the
-permissions.allow list so the hook fires without a prompt.
+The base directory for this skill is shown at the top of this invocation (e.g.
+`/root/.claude/plugins/cache/oliver-plugins/ktlint-formatter/1.0.0/skills/setup-ktlint-hook`).
 
-The hook self-installs ktlint into `~/.claude/plugins/ktlint-formatter/bin/ktlint` on
-first use using the version in `~/.claude/plugins/ktlint-formatter/VERSION` — no manual
-binary installation needed.
+Derive the hook script path by navigating two directories up from that base directory to
+reach the plugin root, then appending `hooks/ktlint-format.sh`. For example:
+`/root/.claude/plugins/cache/oliver-plugins/ktlint-formatter/1.0.0/hooks/ktlint-format.sh`
 
-Merge this into `.claude/settings.json` (do not overwrite existing content):
+Use that absolute path as the hook command (no `~` expansion — use the full path).
+
+Merge the following into `.claude/settings.json` in the current project, preserving any
+existing content, substituting the correct absolute hook script path:
+
 ```json
 {
   "hooks": {
@@ -22,7 +24,7 @@ Merge this into `.claude/settings.json` (do not overwrite existing content):
         "hooks": [
           {
             "type": "command",
-            "command": "bash ~/.claude/plugins/ktlint-formatter/hooks/ktlint-format.sh"
+            "command": "<absolute-path-to-ktlint-format.sh>"
           }
         ]
       }
@@ -30,11 +32,14 @@ Merge this into `.claude/settings.json` (do not overwrite existing content):
   },
   "permissions": {
     "allow": [
-      "Bash(bash ~/.claude/plugins/ktlint-formatter/hooks/ktlint-format.sh)"
+      "Bash(<absolute-path-to-ktlint-format.sh>)"
     ]
   }
 }
 ```
+
+The hook self-installs ktlint into the plugin's `bin/` directory on first use using the
+version in the plugin's `VERSION` file — no manual binary installation needed.
 
 After writing, confirm the hook is active and tell the user that ktlint will be downloaded
 automatically on the next `.kt` file edit.
