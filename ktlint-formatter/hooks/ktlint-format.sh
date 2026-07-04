@@ -1,5 +1,5 @@
 #!/bin/bash
-PLUGIN_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+PLUGIN_DIR="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
 KTLINT_VERSION="$(cat "$PLUGIN_DIR/VERSION")"
 KTLINT_BIN="$PLUGIN_DIR/bin/ktlint"
 

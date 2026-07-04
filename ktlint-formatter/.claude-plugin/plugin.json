@@ -1,7 +1,7 @@
 {
   "name": "ktlint-formatter",
   "description": "Auto-format Kotlin files with ktlint after every edit via a PostToolUse hook. Self-installs the ktlint binary on first use.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": {
     "name": "Oliver Kruecken",
     "email": "okruecken@pdfmodel.org"
