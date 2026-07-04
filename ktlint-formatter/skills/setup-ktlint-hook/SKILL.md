@@ -1,19 +1,34 @@
 ---
 name: setup-ktlint-hook
-description: Register the ktlint PostToolUse hook in this project's .claude/settings.json. The hook self-installs the ktlint binary on first use — no manual install required.
+description: Register the ktlint PostToolUse hook in this project's .claude/settings.json. Creates a stable symlink so the hook path never needs to change when the plugin updates.
 ---
 
 The base directory for this skill is shown at the top of this invocation (e.g.
-`/root/.claude/plugins/cache/oliver-plugins/ktlint-formatter/1.0.0/skills/setup-ktlint-hook`).
+`/root/.claude/plugins/cache/oliver-plugins/ktlint-formatter/1.0.1/skills/setup-ktlint-hook`).
 
-Derive the hook script path by navigating two directories up from that base directory to
-reach the plugin root, then appending `hooks/ktlint-format.sh`. For example:
-`/root/.claude/plugins/cache/oliver-plugins/ktlint-formatter/1.0.0/hooks/ktlint-format.sh`
+**Step 1 — Derive the versioned hook script path**
 
-Use that absolute path as the hook command (no `~` expansion — use the full path).
+Navigate two directories up from the base directory to reach the plugin root, then append
+`hooks/ktlint-format.sh`. For example:
+`/root/.claude/plugins/cache/oliver-plugins/ktlint-formatter/1.0.1/hooks/ktlint-format.sh`
+
+**Step 2 — Create a stable symlink**
+
+Run the following, substituting the derived path from Step 1:
+
+```bash
+mkdir -p "$HOME/.local/bin"
+ln -sf <absolute-path-to-ktlint-format.sh> "$HOME/.local/bin/ktlint-format.sh"
+```
+
+This creates a fixed, version-independent path at `$HOME/.local/bin/ktlint-format.sh`.
+Re-running after a plugin update simply updates the symlink target — `settings.json`
+never needs to change again.
+
+**Step 3 — Register the hook in `.claude/settings.json`**
 
 Merge the following into `.claude/settings.json` in the current project, preserving any
-existing content, substituting the correct absolute hook script path:
+existing content. Expand `$HOME` to its actual value (e.g. `/root`):
 
 ```json
 {
@@ -24,7 +39,7 @@ existing content, substituting the correct absolute hook script path:
         "hooks": [
           {
             "type": "command",
-            "command": "<absolute-path-to-ktlint-format.sh>"
+            "command": "/root/.local/bin/ktlint-format.sh"
           }
         ]
       }
@@ -32,14 +47,12 @@ existing content, substituting the correct absolute hook script path:
   },
   "permissions": {
     "allow": [
-      "Bash(<absolute-path-to-ktlint-format.sh>)"
+      "Bash(/root/.local/bin/ktlint-format.sh)"
     ]
   }
 }
 ```
 
-The hook self-installs ktlint into the plugin's `bin/` directory on first use using the
-version in the plugin's `VERSION` file — no manual binary installation needed.
-
-After writing, confirm the hook is active and tell the user that ktlint will be downloaded
-automatically on the next `.kt` file edit.
+After writing, confirm the hook is active. The symlink means this path stays stable
+across all future plugin version updates — only the symlink target needs updating,
+which this skill handles automatically.
