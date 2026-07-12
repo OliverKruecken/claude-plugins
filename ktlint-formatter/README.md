@@ -9,8 +9,8 @@ A `PostToolUse` hook fires whenever Claude edits or writes a `.kt` file. The ktl
 ## Installation
 
 ```
-/plugin marketplace add OliverKruecken/ktlint-formatter
-/plugin install ktlint-formatter@ktlint-formatter
+/plugin marketplace add OliverKruecken/claude-plugins
+/plugin install ktlint-formatter@oliver-plugins
 ```
 
 Then register the hook in your project once:
